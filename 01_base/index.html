@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>shadowDom</title>
+</head>
+
+<body>
+  <hello-world>
+    <span slot="name">China</span>
+  </hello-world>
+
+  <template id="helloTmp">
+    <div class="hello">
+      hello,
+      <slot name="name"></slot>
+    </div>
+  </template>
+</body>
+
+<script>
+  class HelloWorld extends HTMLElement {
+    constructor() {
+      super()
+
+      const shadowDom = this.attachShadow({ mode: 'open' })
+
+      const divTmp = document.getElementById('helloTmp')
+      const html = divTmp.content.cloneNode(true)
+
+      const styleEle = document.createElement('style')
+      styleEle.innerHTML = `
+        .hello {
+          color: #f00;
+          font-size: 100px;
+        }
+      `
+      shadowDom.append(styleEle)
+      shadowDom.appendChild(html)
+    }
+  }
+
+  window.customElements.define('hello-world', HelloWorld)
+
+</script>
+
+</html>

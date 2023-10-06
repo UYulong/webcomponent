@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Style</title>
+</head>
+
+<body>
+  <!-- 修改CSS方式 1. 伪类 ｜ 2. css variable -->
+  <!-- 1.1  :host 方式 -->
+  <div>
+    <hello-world class="default" />
+  </div>
+
+  <div>
+    <hello-world class="primary" />
+  </div>
+
+  <div>
+    <hello-world class="danger" />
+  </div>
+
+
+
+  <!-- 1.2 :part 方式   -->
+
+
+  <!-- 2. css variable 方式 -->
+
+
+  <template id="helloTmp">
+    <div>
+      <h1 class="title">CSS WC</h1>
+
+      <p class="paragraph">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Atque eligendi libero dolore
+        inventore tenetur
+        deserunt ab, consectetur itaque odio veniam quos officia ipsam beatae id ipsa. Similique quos illum quod!</p>
+    </div>
+  </template>
+</body>
+
+<script>
+  class HelloWorld extends HTMLElement {
+    constructor() {
+      super()
+
+      const shadowDom = this.attachShadow({ mode: 'open' })
+
+      const divEle = document.getElementById('helloTmp')
+      const divTmp = divEle.content.cloneNode(true)
+
+
+      const styleEle = document.createElement('style')
+      styleEle.innerText = `
+        :host{
+          color: red;
+        }
+
+        :host(.default) {
+          color: #363636;
+        }
+
+        :host(.primary) {
+          color: blue
+        }
+
+        :host(.danger) {
+          color: red
+        }
+
+        // .title {
+        //   color: red;
+        // }
+
+        // .paragraph {
+        //   font-size: 20px;
+        //   color: blue;
+        // }
+      `
+
+
+      shadowDom.appendChild(divTmp)
+      shadowDom.appendChild(styleEle)
+    }
+  }
+
+  customElements.define('hello-world', HelloWorld)
+
+</script>
+
+</html>

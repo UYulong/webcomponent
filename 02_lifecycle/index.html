@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiftCycle</title>
+</head>
+
+<body>
+  <h2>Lift cycle callbacks test</h2>
+
+  <button id="add">Add</button>
+  <button id="update">Update</button>
+  <button id="remove">Remove</button>
+
+  <hr>
+
+  <square-box />
+
+</body>
+
+<script>
+  const addBtn = document.getElementById('add')
+  const updateBtn = document.getElementById('update')
+  const removeBtn = document.getElementById('remove')
+
+  updateBtn.disabled = true
+  removeBtn.disabled = true
+
+  let square = null
+
+  const random = (min, max) => {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+  }
+
+  addBtn.addEventListener('click', () => {
+    square = document.createElement('square-box')
+    square.setAttribute('size', '100')
+    square.setAttribute('background', 'red')
+    document.body.appendChild(square)
+
+    updateBtn.disabled = false
+    removeBtn.disabled = false
+    addBtn.disabled = true
+  })
+
+  updateBtn.addEventListener('click', () => {
+    square.setAttribute('size', random(50, 200))
+    square.setAttribute('background', `rgb(${random(0, 255)}, ${random(0, 255)}, ${random(0, 255)})`)
+  })
+
+  removeBtn.addEventListener('click', () => {
+    document.body.removeChild(square)
+
+    addBtn.disabled = false
+    updateBtn.disabled = true
+    removeBtn.disabled = true
+  })
+
+
+  // 更新方法
+  const updateSquare = (el) => {
+    const shadow = el.shadowRoot
+
+    shadow.querySelector('style').textContent = `
+        div {
+          width: ${el.getAttribute('size')}px;
+          height: ${el.getAttribute('size')}px;
+          background: ${el.getAttribute('background')};
+        }
+      `
+  }
+
+  class Square extends HTMLElement {
+    static get observedAttributes() {
+      return [
+        'size',
+        'background'
+      ]
+    }
+
+    constructor() {
+      super()
+
+      const shadowDom = this.attachShadow({ mode: 'open' })
+
+      const divEle = document.createElement('div')
+      const styleEle = document.createElement('style')
+
+      shadowDom.appendChild(divEle)
+      shadowDom.appendChild(styleEle)
+    }
+
+    connectedCallback() {
+      console.log('connectedCallback', '挂载完成');
+      updateSquare(this)
+    }
+
+    disconnectedCallback() {
+      console.log('disconnectedCallback', '卸载完成');
+    }
+
+    attributeChangedCallback(name, oldVal, newVal) {
+      console.log(`${name}change:`, newVal);
+      updateSquare(this)
+    }
+
+
+  }
+
+  customElements.define('square-box', Square)
+</script>
+
+</html>
